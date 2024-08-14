@@ -8,7 +8,7 @@ type TodoList struct {
 	Description string `json:"description"`
 }
 
-func (todo *TodoList) MarshalJSON() ([]byte, error)  {
+func (todo *TodoList) MarshalJSON() ([]byte, error) {
 	type Alias TodoList
 	return json.Marshal(&struct {
 		*Alias
@@ -19,7 +19,7 @@ func (todo *TodoList) MarshalJSON() ([]byte, error)  {
 
 func (todo *TodoList) UnmarshalJSON(b []byte) error {
 	type Alias TodoList
-	aux := &struct{
+	aux := &struct {
 		*Alias
 	}{
 		Alias: (*Alias)(todo),
@@ -42,7 +42,7 @@ type TodoItem struct {
 
 func (todo *TodoItem) MarshalJSON() ([]byte, error) {
 	type Alias TodoItem
-	return json.Marshal(&struct{
+	return json.Marshal(&struct {
 		*Alias
 	}{
 		Alias: (*Alias)(todo),
@@ -51,7 +51,7 @@ func (todo *TodoItem) MarshalJSON() ([]byte, error) {
 
 func (todo *TodoItem) UnmarshalJSON(b []byte) error {
 	type Alias TodoItem
-	aux := &struct{
+	aux := &struct {
 		*Alias
 	}{
 		Alias: (*Alias)(todo),

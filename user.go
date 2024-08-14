@@ -11,7 +11,7 @@ type User struct {
 
 func (user *User) Marshal() ([]byte, error) {
 	type Alias User
-	return json.Marshal(&struct{
+	return json.Marshal(&struct {
 		*Alias
 	}{
 		Alias: (*Alias)(user),
@@ -20,7 +20,7 @@ func (user *User) Marshal() ([]byte, error) {
 
 func (user *User) Unmarshal(b []byte) error {
 	type Alias User
-	aux := &struct{
+	aux := &struct {
 		*Alias
 	}{
 		Alias: (*Alias)(user),
