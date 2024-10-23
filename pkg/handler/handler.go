@@ -26,7 +26,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.POST("/sign-in", h.signIn)//для авторизации
 	}
 	// Группа /api используется для работы andpoints со списками и их задачами
-	api := router.Group("/api")
+	api := router.Group("/api", h.userIdentity)
 	{
 		// Внутри группы api создаётся группа lists для работы со списками:
 		lists := api.Group("/lists")

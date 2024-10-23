@@ -19,7 +19,7 @@ func main() {
 		logrus.Fatalf("error initalizing configs: %s", err.Error())
 	}
 
-	if err := godotenv.Load(); err != nil{//выгружаем переменные окрцжения из файла
+	if err := godotenv.Load(); err != nil{//выгружаем переменные окружения из файла
 		logrus.Fatalf("error loading env varibales: %s", err.Error())
 	}
 
