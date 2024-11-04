@@ -7,6 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type getAllListsResponse struct {
+	Data []todoapp.TodoList `json:"Data"`
+}
+
 func (h *Handler) createlist(c *gin.Context){
 	userId, err := getUserId(c)
 	if err != nil {
@@ -32,7 +36,20 @@ func (h *Handler) createlist(c *gin.Context){
 }
 
 func (h *Handler) getAlllist(c *gin.Context){
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
 
+	lists, err := h.services.TodoList.GetAll(userId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, getAllListsResponse{
+		Data: lists,
+	})
 }
 
 func (h *Handler) getlistById(c *gin.Context){
