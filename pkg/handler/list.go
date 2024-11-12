@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	todoapp "github.com/NikolaySergeevich/todo-app"
 	"github.com/gin-gonic/gin"
@@ -9,6 +10,10 @@ import (
 
 type getAllListsResponse struct {
 	Data []todoapp.TodoList `json:"Data"`
+}
+
+type getListByIdResponse struct {
+	Data todoapp.TodoList `json:"Data"`
 }
 
 func (h *Handler) createlist(c *gin.Context){
@@ -53,7 +58,26 @@ func (h *Handler) getAlllist(c *gin.Context){
 }
 
 func (h *Handler) getlistById(c *gin.Context){
+	// этот метод ищет список по его id
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
 
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
+	}
+
+	list, err := h.services.TodoList.GetById(userId, id)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, getListByIdResponse{
+		Data: list,
+	})
 }
 
 func (h *Handler) updateList(c *gin.Context){

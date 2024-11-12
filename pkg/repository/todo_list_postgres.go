@@ -49,3 +49,12 @@ func (dataB *TodoListPostgres) GetAll(userId int) ([]todoapp.TodoList, error) {
 	err := dataB.db.Select(&lists, query, userId)
 	return lists, err
 }
+
+func (dataB *TodoListPostgres) GetById(userId, Id int) (todoapp.TodoList, error) {
+	var list todoapp.TodoList
+	query := fmt.Sprintf(`SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul 
+						on tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2`, TODO_LIST_TABLE, USERS_LIST_TABLE)
+
+	err := dataB.db.Get(&list, query, userId, Id)
+	return list, err
+}
