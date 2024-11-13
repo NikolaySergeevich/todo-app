@@ -81,7 +81,35 @@ func (h *Handler) getlistById(c *gin.Context){
 }
 
 func (h *Handler) updateList(c *gin.Context){
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
 
+	idList, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
+		return
+	}
+
+	binaryPayload, err := c.GetRawData()
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "failed to get payload")
+		return
+	}
+
+	var updatePayload todoapp.UpdateListPayload
+
+	err = updatePayload.UnmarshalJSON(binaryPayload)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid payload")
+	}
+
+	err = h.services.Update(userId, idList, updatePayload)
+
+	c.JSON(http.StatusOK, statusResponse{
+		Status: "Ok",
+	})
 }
 
 func (h *Handler) deleteList(c *gin.Context){

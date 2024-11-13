@@ -2,9 +2,11 @@ package repository
 
 import (
 	"fmt"
+	"strings"
 
 	todoapp "github.com/NikolaySergeevich/todo-app"
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 )
 
 type TodoListPostgres struct {
@@ -63,5 +65,36 @@ func (dataB *TodoListPostgres) Delete(userId, Id int) error {
 	query := fmt.Sprintf("DELETE FROM %s tl USING %s ul WHERE tl.id = ul.list_id AND ul.user_id=$1 AND ul.list_id=$2", TODO_LIST_TABLE, USERS_LIST_TABLE)
 
 	_, err := dataB.db.Exec(query, userId, Id)
+	return err
+}
+
+func (dataB *TodoListPostgres) Update(userId, Id int, updatePayload todoapp.UpdateListPayload) error {
+	setValues := make([]string, 0) // в этот слайс будем складывать кусочек строки для запроса, который указвает какойму полю какое ххначение присваивать.
+	args := make([]interface{}, 0) // в этом слайсе будут лежать наши новые значения, если они есть в payload.
+	argsId := 1 // это будет задавть id для кусочка строки для обновления, которая будет лежать в первом слайсе(setValues)
+
+	if updatePayload.Title != nil {
+		setValues = append(setValues, fmt.Sprintf("title=$%d", argsId))
+		args = append(args, *updatePayload.Title)
+		argsId++
+	}
+	if updatePayload.Description != nil {
+		setValues = append(setValues, fmt.Sprintf("description=$%d", argsId))
+		args = append(args, *updatePayload.Description)
+		argsId++
+	}
+
+	setQuery := strings.Join(setValues, ", ")
+
+	query := fmt.Sprintf("UPDATE %s tl SET %s FROM %s ul WHERE tl.id = ul.list_id AND ul.list_id=$%d AND ul.user_id=$%d",
+			TODO_LIST_TABLE, setQuery, USERS_LIST_TABLE, argsId, argsId+1)
+	
+	args = append(args, userId, Id)
+
+	logrus.Debugf("updateQuery: %s", query)
+	logrus.Debugf("args: %s", args...)
+
+	_, err := dataB.db.Exec(query, args...)
+
 	return err
 }

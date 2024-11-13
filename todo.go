@@ -1,6 +1,9 @@
 package todoapp
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"errors"
+)
 
 type TodoList struct {
 	Id          int    `json:"id" db:"id"`
@@ -63,4 +66,36 @@ type ListsItem struct {
 	Id     int
 	ListId int
 	ItemId int
+}
+
+type UpdateListPayload struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+}
+
+func (todo *UpdateListPayload) MarshalJSON() ([]byte, error) {
+	type Alias UpdateListPayload
+	return json.Marshal(&struct {
+		*Alias
+	}{
+		Alias: (*Alias)(todo),
+	})
+}
+
+func (todo *UpdateListPayload) UnmarshalJSON(b []byte) error {
+	type Alias UpdateListPayload
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(todo),
+	}
+	return json.Unmarshal(b, &aux)
+}
+
+func (todo *UpdateListPayload) Validate() error {
+	if todo.Title == nil && todo.Description == nil {
+		return errors.New("update structure has no values")
+	}
+
+	return nil
 }
