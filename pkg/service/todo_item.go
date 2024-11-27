@@ -23,3 +23,7 @@ func(item *TodoItemService) Create(userId, listID int, itemPayload todoapp.TodoI
 
 	return item.repo.Create(listID, itemPayload)
 }
+
+func(item *TodoItemService) GetAll(userId, listId int) ([]todoapp.TodoItem, error) {
+	return item.repo.GetAll(userId, listId)
+}

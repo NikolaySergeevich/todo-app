@@ -9,7 +9,11 @@ import (
 )
 
 type getAllListsResponse struct {
-	Data []todoapp.TodoList `json:"Data"`
+	Lists []todoapp.TodoList `json:"Lists"`
+}
+
+type getAllItemsResponse struct {
+	Items []todoapp.TodoItem `json:"Items"`
 }
 
 type getListByIdResponse struct {
@@ -53,7 +57,7 @@ func (h *Handler) getAlllist(c *gin.Context){
 	}
 
 	c.JSON(http.StatusOK, getAllListsResponse{
-		Data: lists,
+		Lists: lists,
 	})
 }
 

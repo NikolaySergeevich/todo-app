@@ -18,6 +18,7 @@ type TodoList interface{
 }
 type TodoItem interface{
 	Create(listId int, item todoapp.TodoItem) (int, error)
+	GetAll(userId, listId int) ([]todoapp.TodoItem, error)
 }
 
 type Repository struct{
